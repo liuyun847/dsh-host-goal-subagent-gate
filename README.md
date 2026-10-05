@@ -254,7 +254,7 @@ buffer 塞(`cordis/lib/index.js:598`),dsh-app-boot 那个 exporter 只要 warn/e
 装载(不要用 `dsh plugin add`,它会丢 bundles 更新;在 profile 目录下执行):
 
 ```bash
-node <工作区>\dsh-plugin-manager\dshpm.mjs add file:./plugins/dsh-host-goal-subagent-gate --profile desktop
+node <工作区>\dsh\dsh-plugin-manager\dshpm.mjs add file:./plugins/dsh-host-goal-subagent-gate --profile desktop
 ```
 
 生效:`cordis.patch.yml` 的 insert 行(本包内)走**热加载**;`lib/*.js` 的代码改动必须重启 dsh。
@@ -271,7 +271,7 @@ node <工作区>\dsh-plugin-manager\dshpm.mjs add file:./plugins/dsh-host-goal-s
 彻底回退:
 
 ```bash
-node <工作区>\dsh-plugin-manager\dshpm.mjs remove dsh-host-goal-subagent-gate --profile desktop
+node <工作区>\dsh\dsh-plugin-manager\dshpm.mjs remove dsh-host-goal-subagent-gate --profile desktop
 # 再删 plugins\dsh-host-goal-subagent-gate 与 node_modules\dsh-host-goal-subagent-gate
 ```
 
