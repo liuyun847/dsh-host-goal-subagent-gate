@@ -1,0 +1,29 @@
+# dsh-host-goal-subagent-gate 的 profile 层 patch(本包作为组合包 bundle 的注册行)。
+#
+# 宿主按 profile 的 dsh.profile.bundles 加载本包时应用本文件;包名进 bundles 由
+# `dshpm add` 完成(见工作区 dsh-plugin-manager/README.md),这里只提供注册行。
+#
+# ── 它做什么 ────────────────────────────────────────────────────────────────
+# 会话有**在飞子代理**时压住 goal 的自动续轮,等它们停下来再放行。
+# "在飞" = `Agent.status !== 'idle'`(running / 读不到)∨ inbox 还有排队消息
+# (v0.2.1 补:maintenance 阶段 status 读出来是 idle,其实马上还要干活)∨ 名下还有活着的后代,
+# **不再**等于"在活代理表里"(已结算、inbox 空、名下无活后代的孩子不再压住门)。
+# 依据与机制全文在 lib/index.js 头部注释;判定逻辑在 lib/gate.js(纯函数)。
+#
+# ── 启停与调参 ──────────────────────────────────────────────────────────────
+# · 总开关:插件页「已安装」里本卡的总开关(写 profile 的 dsh.profile.bundles),
+#   或卡片详情里的行级开关(向 profile 的 cordis.patch.yml 写 disabled 覆盖)。
+# · 一行开关(临时停用,不卸包):把下面两行换成
+#       - id: goal-subagent-gate
+#         name: 'dsh-host-goal-subagent-gate'
+#         config: { enabled: false }
+#   或先只观察不动状态:
+#         config: { observeOnly: true }
+#   其余可调项(全部可省):watchdogIntervalMs(默认 30000)、maxHoldMs(默认 1800000)。
+# · 回退:node <工作区>\dsh-plugin-manager\dshpm.mjs remove dsh-host-goal-subagent-gate --profile desktop
+#   然后删 plugins\dsh-host-goal-subagent-gate 与 node_modules\dsh-host-goal-subagent-gate。
+#
+# 行 id `goal-subagent-gate` 是上述开关与 config 覆盖的寻址键,勿改。
+- insert:
+    - id: goal-subagent-gate
+      name: 'dsh-host-goal-subagent-gate'

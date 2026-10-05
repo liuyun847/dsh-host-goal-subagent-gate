@@ -1,0 +1,38 @@
+{
+  "name": "dsh-host-goal-subagent-gate",
+  "version": "0.2.1",
+  "private": true,
+  "description": "DSH 宿主插件：会话有在飞的子代理时压住 goal 的自动续轮，等它们停下来再放行。修的是 dsh-goal-round-driver 在 agent 一 idle 就立刻开下一轮导致「把活全外包给后台子代理」的会话空转烧额度（实测 25 轮 10 分 28 秒烧完、19 轮无实质推进、目标被自动标 blocked）。「在飞」= Agent.status !== 'idle'（running 或读不到）∨ inbox 还有排队消息（v0.2.1 补：maintenance 阶段 status 读出来是 idle，其实马上还要干活）∨ 名下还有活着的后代，不再等于「在活代理表里」。v0.2.1 另修两处：闩锁在「同一批孩子先停再跑」后静默失效（加 refreshLatches）、活代理表读失败被当空表导致门误开/提前放行（改成 children-unreadable ⇒ 本 tick 不判定）。只动进程内 activation（ctx.goals.disarm/resume/block），不碰消息流、不写会话、不产生额外 blocked code。零依赖纯 Node。",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "cordis",
+    "goal",
+    "subagent"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/liuyun847/dsh-host-goal-subagent-gate.git"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "files": [
+    "lib",
+    "README.md",
+    "cordis.patch.yml"
+  ],
+  "scripts": {
+    "test": "node --test \"test/*.test.mjs\""
+  }
+}
